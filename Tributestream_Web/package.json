@@ -36,16 +36,19 @@
     "prettier-plugin-svelte": "^3.1.2",
     "svelte": "^4.2.7",
     "svelte-check": "^4.0.0",
+    "sveltekit-superforms": "^2.21.1",
     "tailwindcss": "3.4.16",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.0.0",
     "vite": "^5.0.3",
     "vite-plugin-tailwind-purgecss": "0.3.5",
-    "vitest": "^2.0.0"
+    "vitest": "^2.0.0",
+    "zod": "^3.23.8"
   },
   "type": "module",
   "dependencies": {
     "@floating-ui/dom": "1.6.12",
+    "@fortawesome/fontawesome-free": "^6.7.1",
     "dotenv": "^16.4.7",
     "fortawesome": "^0.0.1-security",
     "jwt-decode": "^4.0.0",
