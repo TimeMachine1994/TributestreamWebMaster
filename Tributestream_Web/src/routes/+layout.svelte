@@ -94,7 +94,7 @@
     if (isLoggedIn) {
       // If the user is logged in, log them out
       // NOT-COMPLETE
-      goto('/#');
+      goto('/my-portal');
     } else {
       // If the user is not logged in, navigate to login page
       goto('/login');
@@ -151,7 +151,8 @@
               on:click={() => { handleAuthAction(); closeDrawer; }}
               class="bg-[#D5BA7F] text-black py-2 px-4 border border-transparent rounded-lg hover:text-black"
             >
-              {isLoggedIn ? 'Log Out' : 'Login'}
+
+              {isLoggedIn ? 'My Portal' : 'Login'}
             </button>
           </li>
         </ul>
