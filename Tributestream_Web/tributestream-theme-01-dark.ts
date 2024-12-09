@@ -1,7 +1,7 @@
 
 import type { CustomThemeConfig } from '@skeletonlabs/tw-plugin';
 
-export const tributestreamTheme01: CustomThemeConfig = {
+export const tributestreamTheme01Dark: CustomThemeConfig = {
     name: 'tributestream-theme-01',
     properties: {
 		// =~= Theme Properties =~=
