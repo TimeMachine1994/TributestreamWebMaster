@@ -57,7 +57,8 @@
   },
   "msw": {
     "workerDirectory": [
-      "static"
+      "static",
+      ".public/--save"
     ]
   }
 }
