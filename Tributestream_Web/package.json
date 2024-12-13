@@ -54,5 +54,10 @@
     "fortawesome": "^0.0.1-security",
     "jwt-decode": "^4.0.0",
     "square": "^39.0.0"
+  },
+  "msw": {
+    "workerDirectory": [
+      "static"
+    ]
   }
 }
