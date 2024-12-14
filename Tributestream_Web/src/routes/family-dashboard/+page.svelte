@@ -1,50 +1,39 @@
 <script lang="ts">
     import HeroDetailsCard from '$lib/components/family-dashboard-comps/HeroDetailsCard.svelte';
     import OptionsPanel from '$lib/components/family-dashboard-comps/OptionsPanel.svelte';
-    import LivestreamSchedule from '$lib/components/family-dashboard-comps/LivestreamSchedule.svelte';
-    // Define a generic get function
-    import { get } from '$lib/api';
- 
+     import LivestreamSchedule from '$lib/components/family-dashboard-comps/LivestreamSchedule.svelte';
+    import { getTributeEvents } from '$lib/api';
+    import type { TributeEvent } from '$lib/types';
+    import { onMount } from 'svelte';
+    
+    const heroDetails = {
+		title: "Celebration of life for Marie Marie Marie.",
+		location: "Test Data 10114 Test Data Road.",
+		startTime: "Jan 1, 2024 @ 3:30 PM.",
+		notes: "As needed.",
+        paymentStatus: "Payment Status: Complete"
+	};
 
-    interface HeroDetails {
-        title: string;
-        location: string;
-        startTime: string;
-        notes: string;
-        paymentStatus: string;
-    }
-
-    interface ScheduleItem {
-        startTime: string;
-        streamType: string;
-        estDuration: string;
-        location: string;
-    }
-
-    let heroDetails:HeroDetails;
-    let scheduleData:ScheduleItem[] = [];
-	
-
-	async function loadData() {
-		try {
-			heroDetails = await get<HeroDetails>('/hero-details');
-            scheduleData = await get<ScheduleItem[]>('/schedule');
-		} catch (error) {
+    let scheduleData:TributeEvent[] = [];
+    
+    async function loadScheduleData() {
+        try {
+            scheduleData = await getTributeEvents()
+        } catch (error) {
             console.log(error)
-            // Handle errors here
-		}
-	}
+        }
+    }
 
-	loadData()
+    onMount(() => {
+       loadScheduleData()
+    })
+
 </script>
 
-
 <div class="container mx-auto p-4 max-w-4xl">
-    {#if heroDetails}
-        <HeroDetailsCard {...heroDetails} />
-    {/if}
+    <HeroDetailsCard {...heroDetails} />
     <OptionsPanel />
-    {#if scheduleData}
+     {#if scheduleData}
         <LivestreamSchedule schedule={scheduleData} />
     {/if}
 </div>

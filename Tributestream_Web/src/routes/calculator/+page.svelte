@@ -1,7 +1,4 @@
-<!-- File: LivestreamSetup.svelte -->
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { get } from 'svelte/store';
     import {
         currentPage,
         livestreamAtFuneralHome,
@@ -15,55 +12,74 @@
         additionalCharges,
         totalCost,
         urlFriendlyText
-    } from '$lib/services/calculatorStore.js';
-//LOL
-    // Editing variables for custom URL text
+    } from '$lib/services/calculatorStore';
+     import { postTributeEvents } from '$lib/api';
+   
+
     let editing = false;
-    let tempUrlText = '';
+    let tempUrlText = '';  // Temporary storage for editing
 
     function startEdit() {
         editing = true;
-        tempUrlText = get(urlFriendlyText); // Get the current URL-friendly text from the store
+        tempUrlText = $urlFriendlyText;  // Copy current URL text to temporary variable
     }
 
     function saveEdit() {
-        // Update the text via the provided convertText function, which updates the store
-        convertText(tempUrlText);  
-        editing = false;  
-    }
+    convertText(tempUrlText);  // This directly updates the urlFriendlyText store
+    editing = false;  // Exit editing mode
+}
+
 
     function cancelEdit() {
         editing = false;
-        tempUrlText = ''; 
+        tempUrlText = '';  // Clear temporary storage
     }
+   
 
     function nextStep() {
         currentPage.update(n => n + 1);
     }
+    
 
     function previousStep() {
         currentPage.update(n => n - 1);
     }
 
-    function handleSubmit() {
-        // Replace alert with actual submission logic as needed
-        alert('Submission complete!');
+    async function handleSubmit() {
+        try {
+            const eventData = {
+                event_name: 'Livestream',
+                event_date: $formData.livestreamDate + 'T' + $formData.livestreamTime + ':00Z',
+                event_location: $formData.livestreamLocation,
+                event_description: `Livestream service for ${$formData.yourName}`,
+                tribute_id: 1,  // Replace this with the actual tribute ID
+              
+            }
+            await postTributeEvents(eventData)
+            alert('Submission complete!');
+        } catch (e) {
+            console.log(e);
+            alert('Submission Failed!');
+        }
+        
     }
 
-    // Handle package selection
-    function handlePackageSelection(packageName: string, price: number) {
+    // Utility function to handle package selection with visual feedback
+    function handlePackageSelection(packageName, price) {
         selectPackage(packageName);
-        masterPrice.set(price);
+        masterPrice.set(price); // Assume the package price setting happens here
         calculateTotalCost();
     }
 
-    // Calculate total cost based on selected package and additional charges
+    // Dummy function to simulate total cost calculation
     function calculateTotalCost() {
-        const basePrice = get(masterPrice);
-        const extras = get(additionalCharges);
-        const additionalCost = extras.reduce((sum: number, charge: { item: string, price: number }) => sum + charge.price, 0);
+        let basePrice = masterPrice.get();
+        let additionalCost = additionalCharges.get().reduce((sum, charge) => sum + charge.price, 0);
         totalCost.set(basePrice + additionalCost);
     }
+
+
+
 
     // -----------------------------------------
     // Square Payment Integration
@@ -71,22 +87,26 @@
     const appId = 'sandbox-sq0idb-fLmmKUp3weFYhS3cYmDy-w'; // Replace with your App ID
     const locationId = 'LBZ6V29STVG69'; // Replace with your Location ID
 
-    let card: any;
+    let card;
     let paymentStatus = '';
 
-    // Initialize the Square payment form.
     async function initializePaymentForm() {
-    
+        // Ensure Square is loaded
         if (typeof Square === 'undefined') {
             throw new Error('Square.js failed to load properly. Check your app.html script tag.');
         }
-
         const payments = Square.payments(appId, locationId);
-        card = await payments.card();
-        await card.attach('#card-container'); // Attach the card element to the div with id="card-container"
+
+        try {
+            card = await payments.card();
+            await card.attach('#card-container');
+        } catch (e) {
+            console.error('Initializing Card failed', e);
+            throw e;
+        }
     }
 
-    async function tokenize(paymentMethod: any) {
+    async function tokenize(paymentMethod) {
         const tokenResult = await paymentMethod.tokenize();
         if (tokenResult.status === 'OK') {
             return tokenResult.token;
@@ -98,22 +118,6 @@
             throw new Error(errorMessage);
         }
     }
-    function getCookie(name: string): string | null {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(';');
-    
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(nameEQ) === 0) {
-            return c.substring(nameEQ.length, c.length);
-        }
-    }
-    return null;
-}
- 
 
     async function handlePaymentMethodSubmission() {
         try {
@@ -137,77 +141,26 @@
                 const errorBody = await paymentResponse.text();
                 throw new Error(errorBody);
             }
-        } catch (e: any) {
+        } catch (e) {
             paymentStatus = 'Payment failed';
             console.error(e.message);
         }
     }
 
-    onMount(async () => {
-        // -----------------------------------------
-        // On component mount:
-        // 1. Check if we have a JWT token in the cookies
-        // 2. If we do, decode it to get the user_id
-        // 3. Use that user_id to fetch tribute data from our WP REST route
-        // 4. Pre-fill formData from the retrieved tribute data
-        // -----------------------------------------
 
-        // Get JWT token from cookies (replace 'jwt_token' with the actual cookie name you are using)
-        let token = getCookie('jwt_token');
-        if (token) {
-            try {
-                // Decode the JWT to get user data
-                const decoded = jwt_decode(token);
-
-                // Check if decoded token has user_id
-                if (decoded && decoded.user_id) {
-                    const userId = decoded.user_id;
-
-                    // Fetch tribute data from our custom WP REST route
-                    // Note: Adjust the fetch URL to match your WP REST API endpoint setup
-                    // This endpoint: /wp-json/tributestream/v1/tributes?user_id=<userId>
-                    const response = await fetch(`/wp-json/tributestream/v1/tributes?user_id=${userId}`, {
-                        method: 'GET'
-                    });
-
-                    if (!response.ok) {
-                        console.error('Error fetching tribute data:', response.status, response.statusText);
-                    } else {
-                        const tributeData = await response.json();
-
-                        // Pre-fill formData with tributeData fields
-                        // Here we assume tributeData is an object with keys that match formData properties.
-                        // If keys differ, map them accordingly.
-                        formData.update(d => {
-                            // Return a new object that merges the existing d with the tributeData
-                            return { ...d, ...tributeData };
-                        });
-                    }
-                } else {
-                    console.warn('JWT token decoded, but no user_id found.');
-                }
-            } catch (error) {
-                console.error('Error decoding JWT token:', error);
-            }
-        } else {
-            console.log('No JWT token found in cookies.');
-        }
-    });
 </script>
-
 <svelte:head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-</svelte:head>
 
+</svelte:head>
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-black">
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
             <h3 class="text-lg leading-6 font-medium text-gray-900">Livestream Setup</h3>
             <div class="text-sm text-gray-500">Step {$currentPage} of 5</div>
         </div>
-
-        <!-- Custom Link Display -->
-        <div class="text-center py-4">
+          <!-- Custom Link Display -->
+          <div class="text-center py-4">
             <div class="text-lg font-medium text-gold-500">Your Loved One's Custom Link:</div>
             {#if editing}
                 <div class="inline-flex items-center">
@@ -221,12 +174,11 @@
                 </div>
             {/if}
         </div>
-
         <div class="border-t border-gray-200 flex">
             <div class="{($currentPage >= 4 ? 'w-2/3' : 'w-full')} p-6">
-                <!-- Dynamic form content -->
+                <!-- Dynamic form content based on currentPage -->
                 {#if $currentPage === 1}
-                <!-- Page 1: Basic Information -->
+                <!-- Basic Information Form -->
                 <div class="px-4 py-5 sm:p-6">
                     <div class="grid grid-cols-1 gap-y-6">
                         <div>
@@ -244,7 +196,7 @@
                     </div>
                 </div>
                 {:else if $currentPage === 2}
-                <!-- Page 2: Livestream Details -->
+                <!-- Livestream Details Form -->
                 <div class="px-4 py-5 sm:p-6">
                     <div class="grid grid-cols-1 gap-y-6">
                         <div>
@@ -268,7 +220,7 @@
                     </div>
                 </div>
                 {:else if $currentPage === 3}
-                <!-- Page 3: Package Selection -->
+                <!-- Package Selection Form -->
                 <div class="px-4 py-5 sm:p-6">
                     <div class="grid grid-cols-1 gap-y-4">
                         {#if $livestreamAtFuneralHome}
@@ -285,7 +237,7 @@
                     </div>
                 </div>
                 {:else if $currentPage === 4}
-                <!-- Page 4: Additional Options -->
+                <!-- Additional Options Form -->
                 <div class="px-4 py-5 sm:p-6">
                     <div class="grid grid-cols-1 gap-y-4">
                         <div>
@@ -314,7 +266,7 @@
                     </div>
                 </div>
                 {:else if $currentPage === 5}
-                <!-- Page 5: Summary and Payment -->
+                <!-- Summary and Confirmation -->
                 <div class="px-4 py-5 sm:p-6">
                     <div class="grid grid-cols-1 gap-y-4">
                         <div class="text-sm font-medium text-gray-900">Summary of your selections:</div>
@@ -325,35 +277,38 @@
                         <div class="text-sm text-gray-500">Package: {$selectedPackage}</div>
                         <div class="text-sm text-gray-500">Additional Addresses: {JSON.stringify($additionalLocations)}</div>
                         <div class="text-sm text-gray-500">Total Cost: {$totalCost}</div>
+                      
                     </div>
+                      <!-- Square Payment Form -->
+                      <form on:submit|preventDefault={handlePaymentMethodSubmission}>
+                        {#await initializePaymentForm()}
+                            <p>Loading...</p>
+                        {:catch error}
+                            <p>{error}</p>
+                        {/await}
 
-                    <!-- Square Payment Form -->
-                    {#await initializePaymentForm()}
-                        <p>Loading...</p>
-                    {:catch error}
-                        <p>{error.message}</p>
-                    {/await}
-
-                    <form on:submit|preventDefault={handlePaymentMethodSubmission}>
                         <div id="card-container"></div>
                         <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                             Pay ${$totalCost}
                         </button>
 
                         <div class="flex space-x-4 mt-4">
-                            <button type="button" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                                Pay in full: ${($totalCost * 0.95).toFixed(2)} <br>(5% Discount)
-                            </button>
-                            <button type="button" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            <button class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                                Pay in full: ${($totalCost * 0.95).toFixed(2)} <br> (5% Discount)
+                                </button>
+                                <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                                 Pay Half Now (${($totalCost / 2).toFixed(2)}) and Half Later
                             </button>
                         </div>
+                        
                     </form>
 
+                    <!-- Display payment status -->
                     {#if paymentStatus}
                         <div id="payment-status-container" class="mt-4">{paymentStatus}</div>
                     {/if}
 
+                    <!-- Show Confirm and Submit button only after payment is completed -->
                     {#if paymentStatus === 'Payment completed'}
                         <button on:click={handleSubmit} class="w-full inline-flex justify-center py-2 px-4 mt-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                             Confirm and Submit
@@ -362,7 +317,6 @@
                 </div>
                 {/if}
             </div>
-
             {#if $currentPage >= 4}
             <div class="w-1/3 bg-gray-100 p-6 border-l border-gray-200">
                 <h4 class="text-lg font-semibold mb-4">Your Cart</h4>
@@ -373,23 +327,21 @@
                     {/each}
                     <li>Total Cost: ${$totalCost}</li>
                 </ul>
+                
             </div>
             {/if}
         </div>
-
         <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
             {#if $currentPage > 1}
             <button class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" on:click={previousStep}>
                 Back
             </button>
             {/if}
-
             {#if $currentPage < 5}
             <button class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" on:click={nextStep}>
                 Next
             </button>
             {/if}
-
             {#if $currentPage === 5}
             <button class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" on:click={handleSubmit}>
                 Confirm and Submit

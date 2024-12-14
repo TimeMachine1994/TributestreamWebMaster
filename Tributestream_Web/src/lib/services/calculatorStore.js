@@ -1,67 +1,65 @@
-import { writable, derived, get } from 'svelte/store';
+// src/lib/services/calculatorStore.js
+import { writable, get } from 'svelte/store';
 
+// Current page in the calculator form
 export const currentPage = writable(1);
-export const livestreamAtFuneralHome = writable(null);
+
+// Store for whether the livestream is at the funeral home
+export const livestreamAtFuneralHome = writable(false);
+
+// Store for selected package
 export const selectedPackage = writable('');
-export const additionalLocations = writable({ secondAddress: false, thirdAddress: false });
-export const livestreamDuration = writable(2);
-export const packagePrices = { 'Solo': 399, 'Anywhere': 499, 'Legacy': 799 };
-export const masterPrice = writable(0);
-export const urlFriendlyText = writable("your_loved_ones_name_here");
-export const formData = writable({
-    lovedOnesName: '',
-    livestreamDate: '',
-    yourName: '',
-    email: '',
-    phoneNumber: '',
-    secondAddress: '',
-    thirdAddress: ''
-});
-export const additionalCharges = writable([]);
-
-export const totalCost = derived([masterPrice, additionalCharges], ([$masterPrice, $additionalCharges]) => {
-    return $masterPrice + $additionalCharges.reduce((sum, charge) => sum + charge.price, 0);
-});
-
-function calculateAdditionalCharges() {
-    let charges = [];
-    const locations = get(additionalLocations);
-    const duration = get(livestreamDuration);
-
-    if (locations.secondAddress) {
-        charges.push({ item: 'Location B', price: 399 });
-    }
-    if (locations.thirdAddress) {
-        charges.push({ item: 'Location C', price: 329 });
-    }
-    if (duration > 2) {
-        charges.push({ item: `Additional Livestream Time (${duration - 2}h)`, price: (duration - 2) * 99 });
-    }
-
-    additionalCharges.set(charges);
-}
 
 export function selectPackage(packageName) {
     selectedPackage.set(packageName);
-    masterPrice.set(packagePrices[packageName]);
-    calculateAdditionalCharges();
+}
+// Store for main form data
+export const formData = writable({
+    yourName: '',
+    email: '',
+    phoneNumber: '',
+    livestreamDate: '',
+    livestreamTime: '',
+    livestreamLocation: '',
+    secondAddress: '',
+    thirdAddress: '',
+});
+
+// Function to convert text to URL-friendly format
+export const urlFriendlyText = writable('your-custom-link');
+export function convertText(text) {
+    const slug = text.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+     urlFriendlyText.set(slug);
 }
 
-export function convertText(name) {
-    urlFriendlyText.set(name.replace(/\s+/g, '_').toLowerCase());
-}
+// Store for livestream duration
+export const livestreamDuration = writable(1);
 
-export function updateLivestreamDuration(duration) {
-    livestreamDuration.set(duration);
-    calculateAdditionalCharges(); // Ensure charges are recalculated when duration updates
-}
+// Additional location options
+export const additionalLocations = writable({
+    secondAddress: false,
+    thirdAddress: false,
+});
 
-export function updateLocations(locationUpdates) {
-    additionalLocations.set(locationUpdates);
-    calculateAdditionalCharges(); // Ensure charges are recalculated when locations update
-}
+// Store for the price of the selected package
+export const masterPrice = writable(0);
 
-// Subscriptions to ensure that additional charges are recalculated whenever these values change
-selectedPackage.subscribe(() => calculateAdditionalCharges());
-livestreamDuration.subscribe(() => calculateAdditionalCharges());
-additionalLocations.subscribe(() => calculateAdditionalCharges());
+// Store for additional charges
+export const additionalCharges = writable([
+  {item: 'Extra Address', price: 199},
+]);
+
+// Store for the total cost
+export const totalCost = writable(0);
+
+// Subscribe to changes in additionalLocations to update additionalCharges
+additionalLocations.subscribe(value => {
+    const charges = [];
+    if(value.secondAddress) {
+        charges.push({item: 'Extra Address', price: 199})
+    }
+    if(value.thirdAddress) {
+        charges.push({item: 'Extra Address', price: 199})
+    }
+     additionalCharges.set(charges);
+})
