@@ -30,6 +30,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-svelte": "^2.36.0",
     "globals": "^15.0.0",
+    "jsdom": "^25.0.1",
     "msw": "^2.6.8",
     "postcss": "8.4.49",
     "prettier": "^3.1.1",
@@ -58,7 +59,9 @@
   "msw": {
     "workerDirectory": [
       "static",
-      ".public/--save"
+      ".public/--save",
+      "plubic",
+      "public"
     ]
   }
 }

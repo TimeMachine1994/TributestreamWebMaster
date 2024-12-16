@@ -1,36 +1,38 @@
-<script lang="ts">
-	export let title: string;
-	export let location: string;
-	export let startTime: string;
-	export let notes: string;
-    export let paymentStatus: string;
-</script>
-
-<div class="bg-gray-100 rounded-lg p-6 flex max-w-full">
-    <div class="relative w-1/2 pr-4">
-        <div class="absolute top-0 left-0">
-            <div class="bg-green-500 text-white text-xs px-2 py-1 rounded-md flex items-center">
-                {paymentStatus} <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-            </div>
-        </div>
-        <h2 class="text-2xl font-bold mb-4 mt-8">{title}</h2>
-        <div>
-            <p class="text-gray-600 font-semibold mb-1">Starting Location</p>
-            <hr class="mb-2 border-gray-300"/>
-            <p class="text-gray-700">{location}</p>
-        </div>
-        <div class="mt-2">
-            <p class="text-gray-600 font-semibold mb-1">Start Time</p>
-            <hr class="mb-2 border-gray-300"/>
-            <p class="text-gray-700">{startTime}</p>
-        </div>
-        <div class="mt-2">
-             <p class="text-gray-600 font-semibold mb-1">Notes</p>
-            <hr class="mb-2 border-gray-300"/>
-            <p class="text-gray-700">{notes}</p>
-        </div>
+<script>
+    export let eventTitle = "Celebration of life for Marie Marie Marie.";
+    export let paymentStatus = "Complete";
+    export let locationName = "Test Data";
+    export let locationAddress = "10114 Test Data Road";
+    export let startTime = "Jan 1, 2024 @ 3:30 PM";
+    export let notes = "As needed.";
+  </script>
+  
+  <div class="bg-gray-100 rounded-lg p-6 flex flex-row gap-6">
+    <div class="flex-1">
+      <div class="inline-flex items-center mb-4">
+        <span class="bg-green-200 text-green-800 rounded-full px-3 py-1 text-sm font-semibold mr-2">
+          Payment Status: {paymentStatus}
+        </span>
+        <span class="text-green-800">&#10003;</span>
+      </div>
+      <h1 class="text-xl font-bold mb-4">{eventTitle}</h1>
+      <div class="mb-4">
+        <h2 class="text-md font-semibold">Starting Location</h2>
+        <hr class="my-1" />
+        <p>{locationName}</p>
+        <p>{locationAddress}</p>
+      </div>
+      <div class="mb-4">
+        <h2 class="text-md font-semibold">Start Time</h2>
+        <hr class="my-1" />
+        <p>{startTime}</p>
+      </div>
+      <div class="mb-4">
+        <h2 class="text-md font-semibold">Notes</h2>
+        <hr class="my-1" />
+        <p>{notes}</p>
+      </div>
     </div>
-    <div class="w-1/2 bg-black rounded-lg">
-         
-    </div>
-</div>
+    <div class="flex-1 bg-black rounded-lg h-48"></div>
+  </div>
+  
