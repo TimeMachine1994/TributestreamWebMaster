@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!-- File: src/routes/my-portal/+page.svelte -->
 <!-- Language: Svelte -->
 <!-- 
@@ -91,3 +92,6 @@ onMount(() => {
     </div>
   </div>
   
+=======
+ 
+>>>>>>> 50579b6 (this is what i lost lmao)
