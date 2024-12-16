@@ -8,7 +8,7 @@
 
   async function handleLogin(event) {
       event.preventDefault();
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch('http://localhost/jwt-auth/v1/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
@@ -17,7 +17,7 @@
       const data = await res.json();
       if (res.ok) {
           // On success, we can redirect the user to the home page or a protected page.
-          await goto('/');
+          await goto('/family-dashboard');
       } else {
           errorMessage = data.error || 'Unknown error during login.';
       }

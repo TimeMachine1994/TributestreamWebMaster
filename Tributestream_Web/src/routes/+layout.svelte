@@ -4,11 +4,11 @@
 <svelte:head>
   <script>
 
-    window.wpApiSettings = {
-      root: 'https://wp.tributestream.com/wp-json/',
-      nonce: '',
-      versionString: 'wp/v2/'
-    };
+    //window.wpApiSettings = {
+    //  root: 'https://wp.tributestream.com/wp-json/',
+    //  nonce: '',
+   //   versionString: 'wp/v2/'
+  // };
 
   </script>
   <!-- Importing external JavaScript libraries for Backbone.js and WordPress API -->
