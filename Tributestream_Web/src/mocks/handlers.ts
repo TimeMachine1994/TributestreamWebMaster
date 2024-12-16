@@ -6,7 +6,9 @@
 // **************************************************************
 
  import { http, HttpResponse } from 'msw'
- 
+  
+ import { userHandlers } from './handlers-users.js'
+
 const BASE_WORDPRESS_API = 'http://localhost/wp-json';
 const MAIN_URL = 'http://localhost';
 // **************************************************************
@@ -17,7 +19,24 @@ const MAIN_URL = 'http://localhost';
 // **************************************************************
 export const handlers = [
 
-
+    http.get('/api/hero-details', () => {
+        return HttpResponse.json({
+            title: "Memorial Service",
+            location: "St. Mary's Church",
+            startTime: "2024-02-01T10:00:00",
+            notes: "Please arrive 15 minutes early",
+            paymentStatus: "confirmed"
+        });
+    }),
+    
+    http.get('/api/schedule', () => {
+        return HttpResponse.json([{
+            startTime: "2024-02-01T10:00:00",
+            streamType: "Memorial Service",
+            estDuration: "1 hour",
+            location: "St. Mary's Church"
+        }]);
+    }),
     //Intercept POST that would normally register the user.
 
     http.post(
@@ -63,83 +82,62 @@ export const handlers = [
             });
         }
     ),
-    
-    //Intercept POST that would normally create the tribute page.
-    http.post(
-        `${BASE_WORDPRESS_API}/tributestream/v1/tribute`, 
-        async ({ request }) => {
-            const requestData = await request.json()
-            console.log('User ID:', requestData.user_id)
-            console.log('Loved One Name:', requestData.loved_one_name)
-            console.log('Slug:', requestData.slug)
-            
-            return HttpResponse.json(requestData)
-    }),
+     // Mock login endpoint
+     http.post(`${BASE_WORDPRESS_API}/jwt-auth/v1/token`, async ({ request }) => {
+        const { username, password } = await request.json();
 
-    // JWT Token Generation
-    http.post(`${BASE_WORDPRESS_API}/jwt-auth/v1/token`, async ({ request }) => {
-        const credentials = await request.json()
-        
-        if (credentials.username === 'admin' && credentials.password === 'password') {
-            return HttpResponse.json({
-                token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.example.token',
-                user_display_name: 'admin',
-                user_email: 'admin@localhost.dev',
-                user_nicename: 'admin'
-            })
+        if (username === 'admin' && password === 'password') {
+            return HttpResponse.json(
+                {
+                    success: true,
+                    token: 'mock-jwt-token-123'
+                },
+                {
+                    headers: {
+                        'Set-Cookie': 'auth_token=mock-jwt-token-123; Path=/; HttpOnly; Secure; SameSite=Strict'
+                    }
+                }
+            );
         }
 
-        return HttpResponse.json({
-            token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.example.token',
-            user_display_name: 'admin',
-            user_email: 'admin@localhost.dev',
-            user_nicename: 'admin',
-        }, )
+        return HttpResponse.json(
+            {
+                success: false,
+                message: 'Invalid credentials'
+            },
+            { status: 401 }
+        );
     }),
 
-    // JWT Token Validation
-    http.post(`${BASE_WORDPRESS_API}/jwt-auth/v1/token/validate`, async ({ request }) => {
-        const authHeader = request.headers.get('Authorization')
-        
-        if (authHeader?.startsWith('Bearer ')) {
-            return HttpResponse.json({
-                code: 'jwt_auth_valid_token',
-                data: { status: 200 }
-            })
-        }
-
-        return HttpResponse.json({
-
-
-
-            code: 'jwt_auth_invalid_token',
-            message: 'Signature verification failed',
-            data: { status: 403 }
-        }, )
+    // Mock logout endpoint
+    http.post(`${BASE_WORDPRESS_API}/jwt-auth/v1/logout`, () => {
+        return HttpResponse.json(
+            { success: true },
+            {
+                headers: {
+                    'Set-Cookie': 'auth_token=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict'
+                }
+            }
+        );
     }),
 
-// intercept GET reqeusts to the Wordpress API
-    http.get(
-        `${BASE_WORDPRESS_API}/wp/v2/users/me`, async ({ request }) => {
-        const authHeader = request.headers.get('Authorization')
+    // Mock fetching current user details
+    http.get(`${BASE_WORDPRESS_API}/wp/v2/users/me`, ({ request }) => {
+        const authHeader = request.headers.get('Authorization');
 
         if (authHeader?.startsWith('Bearer ')) {
             return HttpResponse.json({
-                "id": 1,
-                "username": "admin",
-                "name": "Admin User",
-                "first_name": "Admin",
-                "last_name": "User",
-                "email": "admin@example.com",
-                "url": "",
-                "description": "",
-                "link": "https://yourwebsite.com/author/admin",
-                "slug": "admin",
-                "roles": ["administrator"],
-            })
+                id: 1,
+                username: 'admin',
+                name: 'Admin User'
+            });
         }
-    }
-),
+
+        return HttpResponse.json(
+            { message: 'Unauthorized' },
+            { status: 401 }
+        );
+    }),
 
     // handle livestream cart update between pages 4 and 5. 
     http.post(
@@ -177,21 +175,8 @@ export const handlers = [
             })
         }
     ),
+    ...userHandlers,
 
-//     http.get(
-//         `${MAIN_URL}/src/routes/celebration-of-life-for-:slug/+page.js`,
-//         async ({ params }) => {
-//             const { slug } = params
-            
-//             return HttpResponse.json({
-//                 props: {
-//                     slug: slug,
-//                     pageTitle: `Celebration of Life for ${slug}`,
-//                     // Add any other data you want to pass to the page
-//                 }
-//             })
-//         }
-//     )
-    
+
 
  ]

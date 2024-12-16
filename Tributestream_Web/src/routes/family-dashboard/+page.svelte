@@ -6,6 +6,9 @@
     import { get } from '$lib/api';
  
 
+    export let data;
+    const { heroDetails, scheduleData } = data;
+
     interface HeroDetails {
         title: string;
         location: string;
@@ -21,23 +24,9 @@
         location: string;
     }
 
-    let heroDetails:HeroDetails;
-    let scheduleData:ScheduleItem[] = [];
-	
-
-	async function loadData() {
-		try {
-			heroDetails = await get<HeroDetails>('/hero-details');
-            scheduleData = await get<ScheduleItem[]>('/schedule');
-		} catch (error) {
-            console.log(error)
-            // Handle errors here
-		}
-	}
-
-	loadData()
+ 
+ 
 </script>
-
 
 <div class="container mx-auto p-4 max-w-4xl">
     {#if heroDetails}

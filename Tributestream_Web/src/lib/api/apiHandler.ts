@@ -1,13 +1,6 @@
 // - /src/lib/server/api/apiHandler.ts
 
-  //**************************************************************************************************** */
-  // The point of this file is to allow for us to have a central point to make API requests,
-  // securely, on the server, so we don't expose API endpoints to the client. This file will serve
-  // as the base handler to integrate  with both our development environment (using MSW mocks)
-  // and production WordPress backend. It will manage authentication, standardize our request/response
-  // patterns, and provide consistent error handling across all API calls.
-  //**************************************************************************************************** */
-  import { dev } from '$app/environment';
+import { dev } from '$app/environment';
 
 // Define the shape of all API responses for consistent typing
 interface ApiResponse<T> {
@@ -17,29 +10,26 @@ interface ApiResponse<T> {
 }
 
 export class ApiHandler {
-    private baseUrl: string;     // Base URL for all API requests
-    private token: string | null; // JWT token for authenticated requests
+    private baseUrl: string; // Base URL for all API requests
 
     constructor() {
         // Set base URL based on environment
-        // Uses localhost for development (works with MSW)
-        // Uses production URL for live environment
         this.baseUrl = dev ? 'http://localhost' : 'https://tributestream.com';
-        this.token = null;
     }
 
-    // Generic request method that handles all API calls
-    // T is the expected return type of the API call
+    // Generic request method for API calls
     async request<T>(
-        endpoint: string,            // API endpoint (e.g., '/wp-json/wp/v2/search')
-        options: RequestInit = {}    // Fetch API options (method, body, etc.)
+        endpoint: string,
+        options: RequestInit = {},
+        cookies?: { get: (name: string) => string | undefined } // Pass cookies as an argument
     ): Promise<ApiResponse<T>> {
-        // Construct headers with content type and auth token if present
+        // Retrieve the token from cookies if provided
+        const token = cookies?.get('auth_token');
+
+        // Construct headers
         const headers = {
             'Content-Type': 'application/json',
-            // Add JWT token to Authorization header if it exists
-            ...(this.token && { 'Authorization': `Bearer ${this.token}` }),
-            // Merge any additional headers passed in options
+            ...(token && { 'Authorization': `Bearer ${token}` }),
             ...options.headers
         };
 
@@ -47,29 +37,23 @@ export class ApiHandler {
             // Make the API request
             const response = await fetch(`${this.baseUrl}${endpoint}`, {
                 ...options,
-                headers
+                headers,
+                credentials: 'include' // Ensure cookies are sent
             });
 
             // Parse JSON response
             const data = await response.json();
 
-            // Return successful response
             return {
                 data,
                 status: response.status
             };
         } catch (error) {
-            // Handle any errors that occur during the request
             return {
                 error: error instanceof Error ? error.message : 'Unknown error occurred',
                 status: 500
             };
         }
-    }
-
-    // Method to set JWT token for authenticated requests
-    setToken(token: string) {
-        this.token = token;
     }
 }
 
