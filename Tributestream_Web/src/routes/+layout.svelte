@@ -3,7 +3,7 @@
 <!-- Head Section -->
 <svelte:head>
   <script>
-    
+
     window.wpApiSettings = {
       root: 'https://wp.tributestream.com/wp-json/',
       nonce: '',
@@ -64,7 +64,8 @@
     import { goto } from '$app/navigation'; /* Function to navigate to a new page */
     import '../app.postcss'; /* Importing global styles */
     import '@fortawesome/fontawesome-free/css/all.min.css'
- 
+    export let data; // contains user info from layout.server.js
+
 /*********** START Intialize stores and drawer ***********/
     initializeStores();
 
@@ -106,8 +107,19 @@
 
 
 </script>
- 
-<!--*********** START Drawer Component Logic **********-->
+
+
+<nav class="p-4 bg-gray-100 flex justify-between items-center">
+  <div class="font-bold">My SvelteKit Site</div>
+  <div>
+      {#if data.user && data.user.loggedIn}
+          <span>Welcome, you are logged in!</span>
+      {:else}
+          <a href="/login" class="text-blue-600">Login</a>
+      {/if}
+  </div>
+</nav>
+ <!--*********** START Drawer Component Logic **********-->
 
 <!-- Drawer Component for Mobile Navigation -->
 <Drawer>

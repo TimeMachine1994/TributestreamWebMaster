@@ -19,7 +19,7 @@ const MAIN_URL = 'http://localhost';
 // **************************************************************
 export const handlers = [
 
-    http.get('/api/hero-details', () => {
+    http.get(`${BASE_WORDPRESS_API}/api/hero-details`, () => {
         return HttpResponse.json({
             title: "Memorial Service",
             location: "St. Mary's Church",
@@ -29,7 +29,7 @@ export const handlers = [
         });
     }),
     
-    http.get('/api/schedule', () => {
+    http.get(`${BASE_WORDPRESS_API}/api/schedule`, () => {
         return HttpResponse.json([{
             startTime: "2024-02-01T10:00:00",
             streamType: "Memorial Service",
@@ -228,7 +228,7 @@ export const handlers = [
     ),
     
     http.get(
-        '${BASE_WORDPRESS_API}/tributestream/v1/tribute/:userId',
+        `${BASE_WORDPRESS_API}/tributestream/v1/tribute/:userId`,
         async ({ params }) => {
             const { slug } = params;
             console.log('Fetching tribute for slug:', slug);
