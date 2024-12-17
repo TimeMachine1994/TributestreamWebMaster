@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+<!-- <<<<<<< HEAD
 <script lang="ts">
     export let schedule: { startTime: string, streamType: string, estDuration: string, location: string }[];
 </script>
@@ -16,7 +16,7 @@
                     <th class="py-2">Stream Type</th>
                     <th class="py-2">Est. Duration</th>
                     <th class="py-2">Location</th>
-                </tr>
+                </tr>˙
             </thead>
             <tbody>
                 {#each schedule as item, i}
@@ -30,8 +30,8 @@
             </tbody>
         </table>
     </div>
-</div>
-=======
+</div> -->
+
 <script>
     export let schedule = [
       {
@@ -87,6 +87,4 @@
         {/each}
       </tbody>
     </table>
-  </div>
-  
->>>>>>> 50579b6 (this is what i lost lmao)
+  </div> 

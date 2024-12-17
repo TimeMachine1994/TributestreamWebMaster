@@ -12,7 +12,7 @@
         additionalCharges,
         totalCost,
         urlFriendlyText
-    } from '$lib/services/calculatorStore';
+    } from '$lib/stores/calculatorStore
      import { postTributeEvents } from '$lib/api';
    
 

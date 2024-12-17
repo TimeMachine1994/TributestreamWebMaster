@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+<!-- <<<<<<< HEAD
 <script lang="ts">
     const options = [
         { label: 'Upload Media for Livestream', icon: 'arrow-up', color: 'bg-sky-100' },
@@ -26,7 +26,7 @@
         </button>
     {/each}
 </div>
-=======
+======= -->
 <div class="flex flex-row justify-between items-center gap-4 my-6">
   <button class="flex-1 flex flex-col items-center justify-center bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg py-4">
     <span class="font-semibold mb-2">Upload Media for Livestream</span>
@@ -45,4 +45,3 @@
     <span class="text-2xl">📨</span>
   </button>
 </div>
->>>>>>> 50579b6 (this is what i lost lmao)

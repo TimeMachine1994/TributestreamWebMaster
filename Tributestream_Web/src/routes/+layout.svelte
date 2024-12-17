@@ -65,7 +65,39 @@
     import '../app.postcss'; /* Importing global styles */
     import '@fortawesome/fontawesome-free/css/all.min.css'
     export let data; // contains user info from layout.server.js
+   // Add this to get the user's display name
+  import { userStore } from '$lib/stores/authStore';
+  
+  let isLoggedIn = false;
+  let displayName = '';
+  
+  userStore.subscribe(user => {
+    isLoggedIn = user.isLoggedIn;
+    displayName = user.userInfo.displayName || 'Guest';
+  });
 
+  function handleAuthAction() {
+    if (isLoggedIn) {
+      // Clear the user data and localStorage
+      localStorage.removeItem('jwtToken');
+      localStorage.removeItem('userInfo');
+      userStore.set({
+        isLoggedIn: false,
+        token: '',
+        userInfo: {
+          id: null,
+          email: '',
+          displayName: '',
+          userLogin: '',
+          userUrl: '',
+          userRegistered: '',
+        }
+      });
+      goto('/');
+    } else {
+      goto('/login');
+    }
+  }
 /*********** START Intialize stores and drawer ***********/
     initializeStores();
 
@@ -81,26 +113,15 @@
 /*********** END Intialize stores and drawer ***********/
 
 /*********** START Handle Authentication Actions ***********/
-  /* Reactive variable to check login status */
-  let isLoggedIn = false;
-
+  
   /* onMount lifecycle function to check if the user is logged in */
   onMount(() => {
     /* Checks if a JWT token exists in localStorage */
     isLoggedIn = !!localStorage.getItem('jwtToken');
+  
   });
 
-  /* Function to handle authentication actions */
-  function handleAuthAction() {
-    if (isLoggedIn) {
-      // If the user is logged in, log them out
-      // NOT-COMPLETE
-      goto('/my-portal');
-    } else {
-      // If the user is not logged in, navigate to login page
-      goto('/login');
-    }
-  }
+ 
 /*********** END Handle Authentication Actions **********/
 
 
@@ -108,17 +129,6 @@
 
 </script>
 
-
-<nav class="p-4 bg-gray-100 flex justify-between items-center">
-  <div class="font-bold">My SvelteKit Site</div>
-  <div>
-      {#if data.user && data.user.loggedIn}
-          <span>Welcome, you are logged in!</span>
-      {:else}
-          <a href="/login" class="text-blue-600">Login</a>
-      {/if}
-  </div>
-</nav>
  <!--*********** START Drawer Component Logic **********-->
 
 <!-- Drawer Component for Mobile Navigation -->
@@ -164,11 +174,12 @@
               class="bg-[#D5BA7F] text-black py-2 px-4 border border-transparent rounded-lg hover:text-black"
             >
 
-              {isLoggedIn ? 'My Portal' : 'Login'}
+              {isLoggedIn ? 'Logout' : 'Login'}
             </button>
           </li>
         </ul>
       </div>
+    
 </Drawer>
 
 <!--*********** END Drawer Component Logic **********-->
@@ -213,7 +224,7 @@
             on:click={handleAuthAction}
             class="bg-[#D5BA7F] text-black py-2 px-4 border border-transparent rounded-lg hover:text-black"
           >
-            {isLoggedIn ? 'My Portal' : 'Login'}
+            {isLoggedIn ? 'Logout' : 'Login'}
           </button>
           </li>
         </ul>
@@ -228,6 +239,24 @@
         </svg>
       </button>
     </div>
+    <!-- Secondary Navigation - Only shows when logged in -->
+    {#if isLoggedIn}
+    <nav class="bg-[#D5BA7F] text-black py-2 px-4 shadow-md transition-all duration-300">
+      <div class="container mx-auto">
+        <ul class="flex justify-center items-center space-x-6">
+          <li class="font-semibold">
+            Welcome, {displayName}
+          </li>
+          <li>
+            <a href="/my-tributes" class="hover:text-white transition-colors">My Tributes</a>
+          </li>
+          <li>
+            <a href="/account-settings" class="hover:text-white transition-colors">Account Settings</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  {/if}
 </header>
 
 
