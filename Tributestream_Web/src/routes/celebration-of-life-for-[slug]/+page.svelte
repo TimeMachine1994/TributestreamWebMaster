@@ -6,6 +6,7 @@
     
 
     console.log('Tribute data loaded:', tribute);
+    
 </script>
 
 <!-- Hero Section -->

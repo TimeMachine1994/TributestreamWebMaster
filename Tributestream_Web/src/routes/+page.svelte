@@ -4,7 +4,6 @@
 	import { authService } from '$lib/api/unified-tributestream-plugin/auth';
 	import { registrationService } from '$lib/api/unified-tributestream-plugin/register';
 	import { tributeService } from '$lib/api/unified-tributestream-plugin/tribute';
-  
 	// State variables
 	let generatedPassword = '';
 	let lovedOneName = '';
@@ -24,15 +23,15 @@
 	let phone = '';
 	import { userIdStore } from '$lib/stores/userStore';
 	let userId = $userIdStore;
-	 
-	// Get token from local storage
 	function getToken() {
+			// Get token from local storage
+
 	  return localStorage.getItem('jwtToken');
 	}
-	
-	// Slugify text
 	function slugify(text) {
-	  console.log('Slugifying text:', text);
+
+	// Slugify text
+	console.log('Slugifying text:', text);
 	  const slugified = text.toString().toLowerCase()
 		.replace(/\s+/g, '-')
 		.replace(/[^\w\-]+/g, '')
@@ -42,17 +41,16 @@
 	  console.log('Slugified result:', slugified);
 	  return slugified;
 	}
-  
-	// Generate a random password
 	function generateRandomPassword() {
+			// Generate a random password
+
 	  const password = Math.random().toString(36).slice(-8);
 	  console.log('Generated random password:', password);
 	  return password;
 	}
-  
-  
-	// Handle the search and redirect to the results page
 	async function handleSearch() {
+			// Handle the search and redirect to the results page
+
 	  console.log('handleSearch called with lovedOneName:', lovedOneName);
 	  if (lovedOneName.trim()) {
 		console.log('Redirecting to search page with query:', lovedOneName);
@@ -67,21 +65,20 @@
 	  slugifiedName = slugify(lovedOneName);
 	  console.log('Updated slugifiedName:', slugifiedName);
 	}
-  
-  
+	async function handleSubmit() {
 	//**************************************************************************************************** */
 	//  MAIN FUNCTION TO HANDLE SUBMIT
 	//**************************************************************************************************** */
-	async function handleSubmit() {
 		const password = generateRandomPassword();
 		const username = email.split('@')[0];
 		const pageSlug = slugify(lovedOneName);
-		try {
+ 		try {
 		  // Step 1: Registration
 		  const registerResponse = await registrationService.register({
 			  username,
 			  email,
-			  password
+			  password,
+			  phone
 		  });
 		  console.log('Registration complete:', registerResponse);
   
