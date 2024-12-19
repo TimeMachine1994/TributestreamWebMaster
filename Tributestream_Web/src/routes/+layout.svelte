@@ -64,12 +64,12 @@
     import { goto } from '$app/navigation'; /* Function to navigate to a new page */
     import '../app.postcss'; /* Importing global styles */
     import '@fortawesome/fontawesome-free/css/all.min.css'
-    export let data; // contains user info from layout.server.js
    // Add this to get the user's display name
   import { userStore } from '$lib/stores/authStore';
+  let { data, children } = $props();
   
-  let isLoggedIn = false;
-  let displayName = '';
+  let isLoggedIn = $state(false);
+  let displayName = $state('');
   
   userStore.subscribe(user => {
     isLoggedIn = user.isLoggedIn;
@@ -137,7 +137,7 @@
       <!-- Drawer Contents -->
       <div class="p-4">
         <!-- Close Button -->
-        <button class="focus:outline-none mb-4" on:click={closeDrawer}>
+        <button class="focus:outline-none mb-4" onclick={closeDrawer}>
           <!-- Close Icon SVG -->
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg">
@@ -148,29 +148,29 @@
         <!-- Navigation Menu Items -->
         <ul class="space-y-4">
           <li>
-            <a href="/why-tributestream" class="text-black hover:text-gray-700" on:click={closeDrawer}>
+            <a href="/why-tributestream" class="text-black hover:text-gray-700" onclick={closeDrawer}>
               Why Tributestream?
             </a>
           </li>
           <li>
-            <a href="/how-it-works" class="text-black hover:text-gray-700" on:click={closeDrawer}>
+            <a href="/how-it-works" class="text-black hover:text-gray-700" onclick={closeDrawer}>
               How does it work?
             </a>
           </li>
           <li>
-            <a href="/contact" class="text-black hover:text-gray-700" on:click={closeDrawer}>
+            <a href="/contact" class="text-black hover:text-gray-700" onclick={closeDrawer}>
               Contact Us
             </a>
           </li>
           <li>
-            <a href="/schedule" class="text-black hover:text-gray-700" on:click={closeDrawer}>
+            <a href="/schedule" class="text-black hover:text-gray-700" onclick={closeDrawer}>
               Schedule Now
             </a>
           </li>
           <li>
             <!-- Login/Account Settings Button -->
             <button
-              on:click={() => { handleAuthAction(); closeDrawer; }}
+              onclick={() => { handleAuthAction(); closeDrawer; }}
               class="bg-[#D5BA7F] text-black py-2 px-4 border border-transparent rounded-lg hover:text-black"
             >
 
@@ -221,7 +221,7 @@
           </li>
           <li>
             <button
-            on:click={handleAuthAction}
+            onclick={handleAuthAction}
             class="bg-[#D5BA7F] text-black py-2 px-4 border border-transparent rounded-lg hover:text-black"
           >
             {isLoggedIn ? 'Logout' : 'Login'}
@@ -230,7 +230,7 @@
         </ul>
       </nav>
       <!-- On smaller screens, show the hamburger menu -->
-      <button class="md:hidden focus:outline-none" on:click={openDrawer}>
+      <button class="md:hidden focus:outline-none" onclick={openDrawer}>
         <!-- Hamburger Icon SVG -->
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg">
@@ -263,8 +263,7 @@
      <!-- Main Content -->
 <main class="min-w-screen min-h-screen overflow-y-auto">
 <!-- Slot for rendering the content of the current page route -->
-  <slot />
-</main>
+ </main>
    <!-- Footer Section -->
   <footer class="bg-black text-white py-12">
     <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">

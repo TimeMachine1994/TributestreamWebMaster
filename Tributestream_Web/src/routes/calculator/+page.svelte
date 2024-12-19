@@ -1,4 +1,6 @@
 <script lang="ts">
+   import { preventDefault } from 'svelte/legacy';
+
     import {
         currentPage,
         livestreamAtFuneralHome,
@@ -16,8 +18,8 @@
      import { postTributeEvents } from '$lib/api';
    
 
-    let editing = false;
-    let tempUrlText = '';  // Temporary storage for editing
+    let editing = $state(false);
+    let tempUrlText = $state('');  // Temporary storage for editing
 
     function startEdit() {
         editing = true;
@@ -88,7 +90,7 @@
     const locationId = 'LBZ6V29STVG69'; // Replace with your Location ID
 
     let card;
-    let paymentStatus = '';
+    let paymentStatus = $state('');
 
     async function initializePaymentForm() {
         // Ensure Square is loaded
@@ -165,11 +167,11 @@
             {#if editing}
                 <div class="inline-flex items-center">
                     <input type="text" class="text-md text-gold-500 border border-gray-300 focus:ring-0" bind:value={tempUrlText} />
-                    <i class="fas fa-check text-green-500 cursor-pointer ml-2" on:click={saveEdit}></i>
-                    <i class="fas fa-times text-red-500 cursor-pointer ml-2" on:click={cancelEdit}></i>
+                    <i class="fas fa-check text-green-500 cursor-pointer ml-2" onclick={saveEdit}></i>
+                    <i class="fas fa-times text-red-500 cursor-pointer ml-2" onclick={cancelEdit}></i>
                 </div>
             {:else}
-                <div class="text-md text-gold-500 cursor-pointer" on:click={startEdit}>
+                <div class="text-md text-gold-500 cursor-pointer" onclick={startEdit}>
                     {$urlFriendlyText} <i class="fas fa-pencil-alt pl-2"></i>
                 </div>
             {/if}
@@ -224,14 +226,14 @@
                 <div class="px-4 py-5 sm:p-6">
                     <div class="grid grid-cols-1 gap-y-4">
                         {#if $livestreamAtFuneralHome}
-                        <button on:click={() => handlePackageSelection('Solo', 399)} class={`w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md ${$selectedPackage === 'Solo' ? 'text-white bg-blue-600' : 'text-blue-600 bg-white hover:bg-blue-100'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}>
+                        <button onclick={() => handlePackageSelection('Solo', 399)} class={`w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md ${$selectedPackage === 'Solo' ? 'text-white bg-blue-600' : 'text-blue-600 bg-white hover:bg-blue-100'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}>
                             Solo Package - $399 {#if $selectedPackage === 'Solo'}(Selected){/if}
                         </button>
                         {/if}
-                        <button on:click={() => handlePackageSelection('Anywhere', 499)} class={`w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md ${$selectedPackage === 'Anywhere' ? 'text-white bg-blue-600' : 'text-blue-600 bg-white hover:bg-blue-100'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}>
+                        <button onclick={() => handlePackageSelection('Anywhere', 499)} class={`w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md ${$selectedPackage === 'Anywhere' ? 'text-white bg-blue-600' : 'text-blue-600 bg-white hover:bg-blue-100'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}>
                             Anywhere Package - $499 {#if $selectedPackage === 'Anywhere'}(Selected){/if}
                         </button>
-                        <button on:click={() => handlePackageSelection('Legacy', 799)} class={`w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md ${$selectedPackage === 'Legacy' ? 'text-white bg-blue-600' : 'text-blue-600 bg-white hover:bg-blue-100'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}>
+                        <button onclick={() => handlePackageSelection('Legacy', 799)} class={`w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md ${$selectedPackage === 'Legacy' ? 'text-white bg-blue-600' : 'text-blue-600 bg-white hover:bg-blue-100'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}>
                             Legacy Package - $799 {#if $selectedPackage === 'Legacy'}(Selected){/if}
                         </button>
                     </div>
@@ -280,7 +282,7 @@
                       
                     </div>
                       <!-- Square Payment Form -->
-                      <form on:submit|preventDefault={handlePaymentMethodSubmission}>
+                      <form onsubmit={preventDefault(handlePaymentMethodSubmission)}>
                         {#await initializePaymentForm()}
                             <p>Loading...</p>
                         {:catch error}
@@ -310,7 +312,7 @@
 
                     <!-- Show Confirm and Submit button only after payment is completed -->
                     {#if paymentStatus === 'Payment completed'}
-                        <button on:click={handleSubmit} class="w-full inline-flex justify-center py-2 px-4 mt-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <button onclick={handleSubmit} class="w-full inline-flex justify-center py-2 px-4 mt-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                             Confirm and Submit
                         </button>
                     {/if}
@@ -333,17 +335,17 @@
         </div>
         <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
             {#if $currentPage > 1}
-            <button class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" on:click={previousStep}>
+            <button class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick={previousStep}>
                 Back
             </button>
             {/if}
             {#if $currentPage < 5}
-            <button class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" on:click={nextStep}>
+            <button class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick={nextStep}>
                 Next
             </button>
             {/if}
             {#if $currentPage === 5}
-            <button class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" on:click={handleSubmit}>
+            <button class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500" onclick={handleSubmit}>
                 Confirm and Submit
             </button>
             {/if}

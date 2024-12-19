@@ -32,8 +32,8 @@
     </div>
 </div> -->
 
-<script>
-    export let schedule = [
+<script lang="ts">
+  let { schedule = [
       {
         startTime: "11:00 AM",
         streamType: "Viewing",
@@ -55,7 +55,7 @@
         locationName: "Woodlawn Memory Gardens",
         locationAddress: "400 Woodlawn Cemetery Rd, Gotha...",
       },
-    ];
+    ] } = $props();
   </script>
   
   <div class="bg-gray-100 rounded-lg p-6">

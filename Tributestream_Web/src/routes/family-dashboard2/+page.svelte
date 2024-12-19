@@ -15,7 +15,7 @@
         paymentStatus: "Payment Status: Complete"
 	};
 
-    let scheduleData:TributeEvent[] = [];
+    let scheduleData:TributeEvent[] = $state([]);
 
     async function loadScheduleData() {
         try {

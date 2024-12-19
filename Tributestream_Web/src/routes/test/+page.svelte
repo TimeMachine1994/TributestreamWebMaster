@@ -1,6 +1,6 @@
 <script>
     // Placeholder for form data
-    let formData = {
+    let formData = $state({
         directorFirstName: '',
         directorLastName: '',
         familyFirstName: '',
@@ -16,7 +16,7 @@
         locationAddress: '',
         time: '',
         date: ''
-    };
+    });
 </script>
 
 <div class="bg-black text-gray-900">

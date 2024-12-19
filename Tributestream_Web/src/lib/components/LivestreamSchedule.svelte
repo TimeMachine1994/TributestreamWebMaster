@@ -1,7 +1,11 @@
 <script lang="ts">
 	import type { TributeEvent } from '$lib/types';
 
-    export let schedule: TributeEvent[];
+    interface Props {
+        schedule: TributeEvent[];
+    }
+
+    let { schedule }: Props = $props();
 </script>
 
 <div class="mt-6 space-y-4">

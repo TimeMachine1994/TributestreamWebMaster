@@ -2,13 +2,25 @@
 <!-- Language: Svelte -->
 <!-- No changes needed here, just ensure it fits nicely within the parent container. -->
 <script lang="ts">
-    export let type: 'outside' | 'inside' | 'church' | 'setup';
-    export let location: string;
-    export let address: string;
-    export let startTime: string;
-    export let endTime: string;
-    export let title: string;
-    export let details: string;
+  interface Props {
+    type: 'outside' | 'inside' | 'church' | 'setup';
+    location: string;
+    address: string;
+    startTime: string;
+    endTime: string;
+    title: string;
+    details: string;
+  }
+
+  let {
+    type,
+    location,
+    address,
+    startTime,
+    endTime,
+    title,
+    details
+  }: Props = $props();
   
     function getColorClasses(type: string): string {
       switch (type) {

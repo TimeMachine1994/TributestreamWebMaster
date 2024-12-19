@@ -9,8 +9,8 @@
 
  
   let tributes = [];
-  let errorMessage = '';
-  let schedule = []; // This will hold the schedule data
+  let errorMessage = $state('');
+  let schedule = $state([]); // This will hold the schedule data
 
   onMount(async () => {
     try {

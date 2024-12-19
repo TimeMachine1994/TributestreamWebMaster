@@ -5,14 +5,14 @@
 <div class="flex flex-row justify-between items-center gap-4 my-6">
   <button
     class="flex-1 flex flex-col items-center justify-center bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg py-4"
-    on:click={() => goto('/calculator')}
+    onclick={() => goto('/calculator')}
   >
     <span class="font-semibold mb-2">Upload Media for Livestream</span>
     <span class="text-2xl">↑</span>
   </button>
   <button
     class="flex-1 flex flex-col items-center justify-center bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-lg py-4"
-    on:click={() => goto('/calculator')}
+    onclick={() => goto('/calculator')}
   >
     <span class="font-semibold mb-2">Edit Livestream Schedule</span>
     <span class="text-2xl">📅</span>

@@ -1,10 +1,21 @@
-<script>
-    export let eventTitle = "Celebration of life for Marie Marie Marie.";
-    export let paymentStatus = "Complete";
-    export let locationName = "Test Data";
-    export let locationAddress = "10114 Test Data Road";
-    export let startTime = "Jan 1, 2024 @ 3:30 PM";
-    export let notes = "As needed.";
+<script lang="ts">
+  interface Props {
+    eventTitle?: string;
+    paymentStatus?: string;
+    locationName?: string;
+    locationAddress?: string;
+    startTime?: string;
+    notes?: string;
+  }
+
+  let {
+    eventTitle = "Celebration of life for Marie Marie Marie.",
+    paymentStatus = "Complete",
+    locationName = "Test Data",
+    locationAddress = "10114 Test Data Road",
+    startTime = "Jan 1, 2024 @ 3:30 PM",
+    notes = "As needed."
+  }: Props = $props();
   </script>
   
   <div class="bg-gray-100 rounded-lg p-6 flex flex-row gap-6">

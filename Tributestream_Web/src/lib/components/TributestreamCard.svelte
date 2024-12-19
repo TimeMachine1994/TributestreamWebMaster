@@ -5,10 +5,19 @@
   Now includes a matrix of social media icons below the main content to facilitate sharing.
 -->
 <script lang="ts">
-    export let title: string = "Celebration of life for Marie Marie Marie";
-    export let locationName: string = "Test Data";
-    export let locationAddress: string = "10114 Test Data Road";
-    export let startTime: string = "Jan 1, 2024 @ 3:30 PM";
+  interface Props {
+    title?: string;
+    locationName?: string;
+    locationAddress?: string;
+    startTime?: string;
+  }
+
+  let {
+    title = "Celebration of life for Marie Marie Marie",
+    locationName = "Test Data",
+    locationAddress = "10114 Test Data Road",
+    startTime = "Jan 1, 2024 @ 3:30 PM"
+  }: Props = $props();
   
     // Social media platforms with their respective icons and links
     const socialMedia = [

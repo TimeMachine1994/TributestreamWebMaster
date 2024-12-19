@@ -23,17 +23,19 @@
 -->
 
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
     import { page } from '$app/stores';
   
     // We set up local component state to hold the email form data
-    let to = 'recipient@example.com';
-    let from = 'sender@example.com';
-    let subject = 'Your Subject Here';
-    let text = 'Plain text message here...';
-    let html = '<strong>HTML version of message here...</strong>';
+    let to = $state('recipient@example.com');
+    let from = $state('sender@example.com');
+    let subject = $state('Your Subject Here');
+    let text = $state('Plain text message here...');
+    let html = $state('<strong>HTML version of message here...</strong>');
   
-    let sending = false;
-    let responseMessage = '';
+    let sending = $state(false);
+    let responseMessage = $state('');
   
     async function sendEmail() {
       sending = true;
@@ -62,7 +64,7 @@
   <div class="max-w-md mx-auto p-4 space-y-4">
     <h1 class="text-2xl font-bold mb-4">Send an Email</h1>
     <form
-      on:submit|preventDefault={sendEmail}
+      onsubmit={preventDefault(sendEmail)}
       class="space-y-4"
     >
       <div>

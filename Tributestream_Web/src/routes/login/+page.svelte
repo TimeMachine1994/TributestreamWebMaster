@@ -1,11 +1,13 @@
 <script lang="ts">
+  import { preventDefault } from 'svelte/legacy';
+
     import { jwtStore } from '$lib/stores/jwtStore';
     import { goto } from '$app/navigation';
     
-    let username = '';
-    let password = '';
-    let message = '';
-    let isLoading = false;
+    let username = $state('');
+    let password = $state('');
+    let message = $state('');
+    let isLoading = $state(false);
   
     function validateInputs(): boolean {
       console.log('Validating inputs:', { username: username.length > 0, password: password.length > 0 });
@@ -84,7 +86,7 @@
   <div class="login-container">
     <h1>Sign In</h1>
     
-    <form on:submit|preventDefault={handleLogin}>
+    <form onsubmit={preventDefault(handleLogin)}>
       <div class="form-group">
         <label for="username">Username</label>
         <input 

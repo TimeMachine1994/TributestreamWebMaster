@@ -6,8 +6,8 @@ on<script>
     let tributes = writable([]);
   
     // State to track the tribute being edited
-    let editingId = null;
-    let editingHtml = "";
+    let editingId = $state(null);
+    let editingHtml = $state("");
   
     // Fetch all tributes on mount
     const fetchTributes = async () => {
@@ -93,20 +93,20 @@ on<script>
             {#if editingId === tribute.id}
               <button
                 class="bg-green-500 text-white px-4 py-2 rounded mr-2"
-                on:click={() => saveCustomHtml(tribute.id)}
+                onclick={() => saveCustomHtml(tribute.id)}
               >
                 Save
               </button>
               <button
                 class="bg-red-500 text-white px-4 py-2 rounded"
-                on:click={cancelEditing}
+                onclick={cancelEditing}
               >
                 Cancel
               </button>
             {:else}
               <button
                 class="bg-blue-500 text-white px-4 py-2 rounded mr-2"
-                on:click={() => {
+                onclick={() => {
                   editingId = tribute.id;
                   editingHtml = tribute.custom_html;
                 }}
