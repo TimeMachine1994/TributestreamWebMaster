@@ -12,17 +12,16 @@ export const actions = {
             cookies.set('auth_token', 'mock_token', { path: '/' });
             
             const storeData = get(dashboardStore);
-            const redirectPath = storeData.hasVisitedCalculator ? '/dashboard' : '/calculator';
-
             return {
                 success: true,
-                redirect: redirectPath
+                redirect: storeData.hasVisitedCalculator ? '/dashboard' : '/calculator'
             };
         }
 
         return {
             success: false,
-            message: 'Invalid credentials'
-        };
+            message: 'Invalid credentials',
+            redirect: '/login'
+        }; 
     }
 } satisfies Actions;

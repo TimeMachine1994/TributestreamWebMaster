@@ -5,9 +5,9 @@
     export let form;
     export let data;
 
-    $: if (data.authenticated) {
-        goto(data.redirect);
-    }
+ $: if (data.authenticated) {
+    window.location.href = data.redirect;
+}
 </script>
 
 <div class="login-container">
